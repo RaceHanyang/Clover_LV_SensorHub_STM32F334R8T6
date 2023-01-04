@@ -63,7 +63,7 @@ void HAL_SYSTICK_Callback(void)
 	}
 	if(gTimerCnt % 10 == 0)
 	{
-		gTask.flag_100ms = True;
+		gTask.flag_1000ms = True;
 	}
 }
 
