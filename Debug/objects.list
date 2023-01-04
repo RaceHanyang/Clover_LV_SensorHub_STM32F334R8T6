@@ -1,4 +1,5 @@
 "./Core/Src/GAS_Scheduler.o"
+"./Core/Src/GAS_Vadc.o"
 "./Core/Src/adc.o"
 "./Core/Src/can.o"
 "./Core/Src/dma.o"

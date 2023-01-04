@@ -12,6 +12,7 @@
 #define INC_GAS_SCHEDULER_H_
 
 #include "stm32f3xx_hal.h"
+#include "GAS_Vadc.h"
 
 typedef struct{
 	volatile uint8_t flag_1ms;

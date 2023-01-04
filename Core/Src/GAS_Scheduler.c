@@ -27,6 +27,7 @@ void GAS_Scheduler(void);
 void GAS_Scheduler_init(void)
 {
 	SysTick_Config(SystemCoreClock/1000);
+	GAS_Vadc_init();
 }
 
 void GAS_Scheduler_taskCounter_1ms(void)
