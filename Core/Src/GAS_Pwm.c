@@ -11,6 +11,8 @@
 #include "GAS_Pwm.h"
 SensorHubPWM_t SensorHubPWM;
 
+const double dutyLowerBound = 0.0;
+const double dutyUpperBound = 1.0;
 
 void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 {

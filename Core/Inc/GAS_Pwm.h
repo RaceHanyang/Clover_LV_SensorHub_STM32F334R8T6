@@ -14,8 +14,6 @@
 #include "stm32f3xx_hal.h"
 #include "GAS_BuildConfig.h"
 
-const double dutyLowerBound = 0.0;
-const double dutyUpperBound = 1.0;
 
 typedef struct {
 #ifdef __USE_TIM1__
@@ -45,5 +43,6 @@ typedef struct {
 }SensorHubPWM_t;
 
 extern SensorHubPWM_t SensorHubPWM;
-
+extern const double dutyLowerBound;
+extern const double dutyUpperBound;
 #endif /* INC_GAS_PWM_H_ */
