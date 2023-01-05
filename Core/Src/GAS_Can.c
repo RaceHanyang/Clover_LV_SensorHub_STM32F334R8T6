@@ -10,30 +10,54 @@
 
 #include "GAS_Can.h"
 
-CAN_TxHeaderTypeDef canTxHeader_ADC;
+#ifdef __USE_ADC1__
+CAN_TxHeaderTypeDef canTxHeader_ADC1;
+stm32_msgADC_t stm32_msgADC1;
+#endif
+#ifdef __USE_ADC2__
+CAN_TxHeaderTypeDef canTxHeader_ADC2;
+stm32_msgADC_t stm32_msgADC2;
+#endif
+
 CAN_TxHeaderTypeDef canTxHeader_WSS;
 
-stm32_msgADC_t stm32_msgADC;
 stm32_msgWSS_t stm32_msgWSS;
 uint32_t TxMailBox;
 
 #ifdef __THIS_SENSORHUB_IS_FOR_FRONT__
-uint32_t STM32_msgADC_ID = 0x00334F01;
-uint32_t STM32_msgWSS_ID = 0x00334F02;
+#ifdef __USE_ADC1__
+uint32_t STM32_msgADC1_ID = 0x00334F01;
+#endif
+#ifdef __USE_ADC2__
+uint32_t STM32_msgADC2_ID = 0x00334F02;
+#endif
+uint32_t STM32_msgWSS_ID = 0x00334F03;
 #endif
 
 #ifdef __THIS_SENSORHUB_IS_FOR_REAR__
-uint32_t STM32_msgADC_ID = 0x00334B01;
-uint32_t STM32_msgWSS_ID = 0x00334B02;
+#ifdef __USE_ADC1__
+uint32_t STM32_msgADC1_ID = 0x00334B01;
+#endif
+#ifdef __USE_ADC2__
+uint32_t STM32_msgADC2_ID = 0x00334B02;
+#endif
+uint32_t STM32_msgWSS_ID = 0x00334B03;
 #endif
 
 void GAS_Can_txSetting(void)
 {
-	canTxHeader_ADC.ExtId = STM32_msgADC_ID;
-	canTxHeader_ADC.IDE = CAN_ID_EXT;
-	canTxHeader_ADC.RTR = CAN_RTR_DATA;
-	canTxHeader_ADC.DLC = 8;
-
+#ifdef __USE_ADC1__
+	canTxHeader_ADC1.ExtId = STM32_msgADC1_ID;
+	canTxHeader_ADC1.IDE = CAN_ID_EXT;
+	canTxHeader_ADC1.RTR = CAN_RTR_DATA;
+	canTxHeader_ADC1.DLC = 8;
+#endif
+#ifdef __USE_ADC2__
+	canTxHeader_ADC1.ExtId = STM32_msgADC2_ID;
+	canTxHeader_ADC1.IDE = CAN_ID_EXT;
+	canTxHeader_ADC1.RTR = CAN_RTR_DATA;
+	canTxHeader_ADC1.DLC = 8;
+#endif
 	canTxHeader_WSS.ExtId = STM32_msgWSS_ID;
 	canTxHeader_WSS.IDE = CAN_ID_EXT;
 	canTxHeader_WSS.RTR = CAN_RTR_DATA;
@@ -56,9 +80,60 @@ void GAS_Can_init(void)
 
 void GAS_Can_sendMessage()
 {
+	//Modify them according to GAS_BuildConfig.h
+	stm32_msgWSS.B.WSS1 = SensorHubPWM.Interval2;
+	stm32_msgWSS.B.WSS2 = SensorHubPWM.Interval3;
+
+#ifdef __USE_TIM1__
+	if(SensorHubPWM.DutyRatio1 > dutyUpperBound || SensorHubPWM.DutyRatio1 < dutyLowerBound) {
+		stm32_msgWSS.B.dutyFlag.S.TIM1_ERROR = 1;
+	} else{
+		stm32_msgWSS.B.dutyFlag.S.TIM1_ERROR = 0;
+	}
+#endif
+
+#ifdef __USE_TIM2__
+	if(SensorHubPWM.DutyRatio2 > dutyUpperBound || SensorHubPWM.DutyRatio2 < dutyLowerBound) {
+		stm32_msgWSS.B.dutyFlag.S.TIM2_ERROR = 1;
+	} else{
+		stm32_msgWSS.B.dutyFlag.S.TIM2_ERROR = 0;
+	}
+#endif
+
+#ifdef __USE_TIM3__
+	if(SensorHubPWM.DutyRatio3 > dutyUpperBound || SensorHubPWM.DutyRatio3 < dutyLowerBound) {
+		stm32_msgWSS.B.dutyFlag.S.TIM3_ERROR = 1;
+	} else{
+		stm32_msgWSS.B.dutyFlag.S.TIM3_ERROR = 0;
+	}
+#endif
+
+#ifdef __USE_TIM15__
+	if(SensorHubPWM.DutyRatio15 > dutyUpperBound || SensorHubPWM.DutyRatio15 < dutyLowerBound) {
+		stm32_msgWSS.B.dutyFlag.S.TIM15_ERROR = 1;
+	} else{
+		stm32_msgWSS.B.dutyFlag.S.TIM15_ERROR = 0;
+	}
+#endif
+
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
 	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_WSS, &stm32_msgWSS.TxData[0], &TxMailBox);
 
+#ifdef __USE_ADC1__
+	stm32_msgADC1.B.IN1 = SensorHubADC.ADC1_IN1;
+	stm32_msgADC1.B.IN2 = SensorHubADC.ADC1_IN2;
+	stm32_msgADC1.B.IN3 = SensorHubADC.ADC1_IN3;
+	stm32_msgADC1.B.IN4 = SensorHubADC.ADC1_IN4;
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
-	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_ADC, &stm32_msgADC.TxData[0], &TxMailBox);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_ADC1, &stm32_msgADC1.TxData[0], &TxMailBox);
+#endif
+
+#ifdef __USE_ADC2__
+	stm32_msgADC2.B.IN1 = SensorHubADC.ADC2_IN1;
+	stm32_msgADC2.B.IN2 = SensorHubADC.ADC2_IN2;
+	stm32_msgADC2.B.IN3 = SensorHubADC.ADC2_IN3;
+	stm32_msgADC2.B.IN4 = SensorHubADC.ADC2_IN4;
+	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_ADC2, &stm32_msgADC2.TxData[0], &TxMailBox);
+#endif
 }

@@ -1,4 +1,4 @@
-/*
+/*T
  * GAS_Can.h
  *
  * Created: Jan 5th, 2023
@@ -15,34 +15,15 @@
 #include "can.h"
 
 #include "GAS_BuildConfig.h"
-
+#include "GAS_Pwm.h"
+#include "GAS_Vadc.h"
 typedef union{
 	uint8_t TxData[8];
 	struct{
-#ifdef __USE_ADC1__
-		uint8_t ADC1_IN1;
-		uint8_t ADC1_IN2;
-		uint8_t ADC1_IN3;
-		uint8_t ADC1_IN4;
-#endif
-#ifndef __USE_ADC1__
-		uint8_t Reserved1;
-		uint8_t Reserved2;
-		uint8_t Reserved3;
-		uint8_t Reserved4;
-#endif
-#ifdef __USE_ADC2__
-		uint8_t ADC2_IN1;
-		uint8_t ADC2_IN2;
-		uint8_t ADC2_IN3;
-		uint8_t ADC2_IN4;
-#endif
-#ifndef __USE_ADC2__
-		uint8_t Reserved5;
-		uint8_t Reserved6;
-		uint8_t Reserved7;
-		uint8_t Reserved8;
-#endif
+		uint16_t IN1;
+		uint16_t IN2;
+		uint16_t IN3;
+		uint16_t IN4;
 	}__attribute__((aligned(1),packed)) B;
 }stm32_msgADC_t;
 
@@ -87,10 +68,15 @@ typedef union
 	}__attribute__((aligned(1),packed)) B;
 }stm32_msgWSS_t;
 
-extern stm32_msgADC_t stm32_msgADC;
+#ifdef __USE_ADC1__
+extern stm32_msgADC_t stm32_msgADC1;
+#endif
+#ifdef __USE_ADC2__
+extern stm32_msgADC_t stm32_msgADC2;
+#endif
 extern stm32_msgWSS_t stm32_msgWSS;
 
-extern uint32_t STM32_msgADC_ID;
+extern uint32_t STM32_msgADC1_ID;
 extern uint32_t STM32_msgWSS_ID;
 
 extern void GAS_Can_init(void);
