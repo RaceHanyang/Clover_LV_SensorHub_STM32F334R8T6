@@ -15,6 +15,7 @@ CAN_TxHeaderTypeDef canTxHeader_WSS;
 
 stm32_msgADC_t stm32_msgADC;
 stm32_msgWSS_t stm32_msgWSS;
+uint32_t TxMailBox;
 
 #ifdef __THIS_SENSORHUB_IS_FOR_FRONT__
 uint32_t STM32_msgADC_ID = 0x00334F01;
@@ -48,7 +49,16 @@ void GAS_Can_init(void)
 {
 	GAS_Can_txSetting();
 	GAS_Can_rxSetting();
-	//HAL_CAN_Start();
+	if(HAL_CAN_Start(&hcan) != HAL_OK) {
+		Error_Handler();
+	}
+}
 
+void GAS_Can_sendMessage()
+{
+	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_WSS, &stm32_msgWSS.TxData[0], &TxMailBox);
 
+	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
+	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_ADC, &stm32_msgADC.TxData[0], &TxMailBox);
 }

@@ -94,4 +94,5 @@ extern uint32_t STM32_msgADC_ID;
 extern uint32_t STM32_msgWSS_ID;
 
 extern void GAS_Can_init(void);
+extern void GAS_Can_sendMessage();
 #endif /* SRC_GETANDSEND_H_ */
