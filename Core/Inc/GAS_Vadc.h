@@ -11,11 +11,11 @@
 #ifndef INC_GAS_VADC_H_
 #define INC_GAS_VADC_H_
 
+#include "GAS_BuildConfig.h"
+
 #include "adc.h"
 #include "dma.h"
 
-#define __USE_ADC1__
-//#define __USE_ADC2__
 
 extern void GAS_Vadc_init(void);
 extern void GAS_Vadc_dmaIn(void);
