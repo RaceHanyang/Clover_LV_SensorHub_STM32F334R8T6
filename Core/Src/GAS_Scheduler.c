@@ -9,6 +9,7 @@
  * */
 
 #include "GAS_Scheduler.h"
+#include "GAS_Vadc.h"
 
 #define False 0
 #define True 1
