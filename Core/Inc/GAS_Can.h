@@ -31,8 +31,8 @@ typedef union
 {//Max. WS ~2000
 	uint8_t TxData[8];
 	struct{
-		uint16_t WSS1;
-		uint16_t WSS2;
+		uint16_t WSS1_RPM;
+		uint16_t WSS2_RPM;
 		union
 		{
 			uint8_t U;
@@ -65,6 +65,8 @@ typedef union
 				uint8_t reserved: 4;
 			}S;
 		} dutyFlag;
+		uint16_t reserved1;
+		uint8_t reserved2;
 	}__attribute__((aligned(1),packed)) B;
 }stm32_msgWSS_t;
 
