@@ -45,4 +45,21 @@ typedef struct {
 extern SensorHubPWM_t SensorHubPWM;
 extern const double dutyLowerBound;
 extern const double dutyUpperBound;
+
+extern uint32_t PCLK1TIM(void);
+extern uint32_t PCLK2TIM(void);
+
+#ifdef __USE_TIM1__
+#endif
+
+#ifdef __USE_TIM2__
+extern uint16_t TickToRPM_TIM2(uint32_t);
+#endif
+
+#ifdef __USE_TIM3__
+extern uint16_t TickToRPM_TIM3(uint16_t);
+#endif
+
+#ifdef __USE_TIM15__
+#endif
 #endif /* INC_GAS_PWM_H_ */

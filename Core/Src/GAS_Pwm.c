@@ -8,6 +8,8 @@
  * ref: https://www.youtube.com/watch?v=P6211ic2N_s
  * */
 
+#include "tim.h"
+
 #include "GAS_Pwm.h"
 SensorHubPWM_t SensorHubPWM;
 
@@ -61,3 +63,68 @@ void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 	}
 #endif
 }
+
+/*
+ * Quite a surprise, stock HAL does not provide a function to look up the clock frequency for timer peripherals.
+ * This is a user implemented function that returns "APB1 timer clocks (MHz)" field set on the .ioc configuration.
+ * TIM 2,3,6,7 run on this clock.
+ * Checkout associated JIRA project for design intentions.
+ * */
+uint32_t PCLK1TIM(void) {
+	uint32_t PCLK1 = HAL_RCC_GetPCLK1Freq();
+
+	if((RCC->CFGR & RCC_CFGR_PPRE1) == 0)
+	{
+		return PCLK1;
+	}
+	else
+	{
+		return (2 * PCLK1);
+	}
+}
+
+/*
+ * Ditto.
+ * TIM 15, 16, 17 run on this clock.
+ * */
+uint32_t PCLK2TIM(void) {
+	uint32_t PCLK2 = HAL_RCC_GetPCLK2Freq();
+
+	if((RCC->CFGR & RCC_CFGR_PPRE2) == 0)
+	{
+		return PCLK2;
+	}
+	else
+	{
+		return (2 * PCLK2);
+	}
+}
+
+#ifdef __USE_TIM2__
+/*
+ * TIM2 - 32bit Counter.
+ *
+ * htim2.Init.Prescaler technically means the initial value, therefore it is not necessarily the same with the TIM2_PSC register.
+ * i.e., if TIM2_PSC alters, this function might not work as expected.
+ * This is not the case here, so actually this is not going to bring any issue, but I am pretty unsatisfied with this decision as it kind of looks to be a trick that is not legit.
+ *
+ * LL_TIM_GetPrescaler seems to provide the exactly desired value, that is, the TIMx_PSC in effect, but this method belongs to low-layer files, not HAL.
+ * But I do not want to harm the level of abstraction for this project, so I am now just settling with this design.
+ * */
+uint16_t TickToRPM_TIM2(uint32_t Interval)
+{
+	return (2.5/(((double)Interval * (htim2.Init.Prescaler+1))/PCLK1TIM()));
+}
+#endif
+
+#ifdef __USE_TIM3__
+/*
+ * TIM3 - 16bit Counter.
+ *
+ * Ditto
+ * */
+uint16_t TickToRPM_TIM3(uint16_t Interval)
+{
+	return (2.5/(((double)Interval * (htim3.Init.Prescaler+1))/PCLK1TIM()));
+}
+#endif

@@ -81,8 +81,8 @@ void GAS_Can_init(void)
 void GAS_Can_sendMessage()
 {
 	//Modify them according to GAS_BuildConfig.h
-	stm32_msgWSS.B.WSS1_RPM = SensorHubPWM.Interval2;
-	stm32_msgWSS.B.WSS2_RPM = SensorHubPWM.Interval3;
+	stm32_msgWSS.B.WSS1_RPM = TickToRPM_TIM2(SensorHubPWM.Interval2);
+	stm32_msgWSS.B.WSS2_RPM = TickToRPM_TIM3(SensorHubPWM.Interval3);
 
 #ifdef __USE_TIM1__
 	if(SensorHubPWM.DutyRatio1 > dutyUpperBound || SensorHubPWM.DutyRatio1 < dutyLowerBound) {
