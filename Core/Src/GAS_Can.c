@@ -53,10 +53,10 @@ void GAS_Can_txSetting(void)
 	canTxHeader_ADC1.DLC = 8;
 #endif
 #ifdef __USE_ADC2__
-	canTxHeader_ADC1.ExtId = STM32_msgADC2_ID;
-	canTxHeader_ADC1.IDE = CAN_ID_EXT;
-	canTxHeader_ADC1.RTR = CAN_RTR_DATA;
-	canTxHeader_ADC1.DLC = 8;
+	canTxHeader_ADC2.ExtId = STM32_msgADC2_ID;
+	canTxHeader_ADC2.IDE = CAN_ID_EXT;
+	canTxHeader_ADC2.RTR = CAN_RTR_DATA;
+	canTxHeader_ADC2.DLC = 8;
 #endif
 	canTxHeader_WSS.ExtId = STM32_msgWSS_ID;
 	canTxHeader_WSS.IDE = CAN_ID_EXT;
@@ -74,6 +74,10 @@ void GAS_Can_init(void)
 	GAS_Can_txSetting();
 	GAS_Can_rxSetting();
 	if(HAL_CAN_Start(&hcan) != HAL_OK) {
+		Error_Handler();
+	}
+	if (HAL_CAN_ActivateNotification(&hcan, CAN_IT_RX_FIFO0_MSG_PENDING) != HAL_OK)
+	{
 		Error_Handler();
 	}
 }
@@ -118,6 +122,12 @@ void GAS_Can_sendMessage()
 
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
 	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_WSS, &stm32_msgWSS.TxData[0], &TxMailBox);
+	/*if(TxMailBox > 0) {
+		HAL_GPIO_WritePin(GPIOB, LED01_Pin, GPIO_PIN_SET);
+	}
+	else{
+		HAL_GPIO_WritePin(GPIOB, LED01_Pin, GPIO_PIN_RESET);
+	}*/
 
 #ifdef __USE_ADC1__
 	stm32_msgADC1.B.IN1 = SensorHubADC.ADC1_IN1;
@@ -126,6 +136,12 @@ void GAS_Can_sendMessage()
 	stm32_msgADC1.B.IN4 = SensorHubADC.ADC1_IN4;
 	TxMailBox = HAL_CAN_GetTxMailboxesFreeLevel(&hcan);
 	HAL_CAN_AddTxMessage(&hcan, &canTxHeader_ADC1, &stm32_msgADC1.TxData[0], &TxMailBox);
+	/*if(TxMailBox > 0) {
+		HAL_GPIO_WritePin(GPIOB, LED02_Pin, GPIO_PIN_SET);
+	}
+	else{
+		HAL_GPIO_WritePin(GPIOB, LED02_Pin, GPIO_PIN_RESET);
+	}*/
 #endif
 
 #ifdef __USE_ADC2__

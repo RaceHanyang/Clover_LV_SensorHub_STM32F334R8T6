@@ -9,6 +9,7 @@
  * */
 
 #include "GAS_Scheduler.h"
+#include "GAS_Can.h"
 #include "GAS_Vadc.h"
 
 #define False 0
@@ -25,25 +26,40 @@ void GAS_Scheduler_taskCounter_1000ms(void);
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 void GAS_Scheduler(void);
 
+int b;
+
 void GAS_Scheduler_init(void)
 {
-	SysTick_Config(SystemCoreClock/1000);
-	GAS_Vadc_init();
+	uint32_t systemClockFreq = GAS_getSystemCoreClock(); //HCLK in HZ
+
+	SysTick_Config(systemClockFreq/1000);
+
+	//GAS_Vadc_init(); //실행 중 reset
+	GAS_Adc_init(); //실행 중 reset
+	GAS_Pwm_init();
+	GAS_Can_init();
+	gTask.flag_initialized = True;
+
 }
 
 void GAS_Scheduler_taskCounter_1ms(void)
 {
-
+	GAS_Adc_getValue();
 }
 
 void GAS_Scheduler_taskCounter_10ms(void)
 {
-
+	GAS_Can_sendMessage();
 }
 
 void GAS_Scheduler_taskCounter_100ms(void)
 {
+	//HAL_GPIO_TogglePin(GPIOB, BlueLED_Pin);
+	// HAL_GPIO_WritePin(GPIOB, LED03_Pin|LED02_Pin|LED01_Pin|LED00_Pin, GPIO_PIN_RESET);
+	//HAL_GPIO_TogglePin(GPIOB, LED00_Pin/*|LED02_Pin|LED01_Pin|LED00_Pin*/);
+	//HAL_GPIO_TogglePin(GPIOC, LED10_Pin|LED11_Pin);
 
+	//LED03이 Reset LED
 }
 
 void GAS_Scheduler_taskCounter_1000ms(void)
@@ -51,6 +67,7 @@ void GAS_Scheduler_taskCounter_1000ms(void)
 
 }
 
+//Ref: https://jexe.tistory.com/4
 void HAL_SYSTICK_Callback(void)
 {
 	gTimerCnt++;
@@ -63,7 +80,7 @@ void HAL_SYSTICK_Callback(void)
 	{
 		gTask.flag_100ms = True;
 	}
-	if(gTimerCnt % 10 == 0)
+	if(gTimerCnt % 1000 == 0)
 	{
 		gTask.flag_1000ms = True;
 	}

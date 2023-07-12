@@ -16,7 +16,8 @@
 
 #include "GAS_BuildConfig.h"
 #include "GAS_Pwm.h"
-#include "GAS_Vadc.h"
+//#include "GAS_Vadc.h"
+#include "GAS_Adc.h"
 typedef union{
 	uint8_t TxData[8];
 	struct{

@@ -16,8 +16,29 @@ SensorHubPWM_t SensorHubPWM;
 const double dutyLowerBound = 0.0;
 const double dutyUpperBound = 1.0;
 
+void GAS_Pwm_init()
+{
+#ifdef __USE_TIM1__
+	HAL_TIM_IC_Start_IT(&htim1, TIM_CHANNEL_1); //main channel
+	HAL_TIM_IC_Start(&htim1, TIM_CHANNEL_2); //indirect channel
+#endif
+#ifdef __USE_TIM2__
+	HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); //main channel
+	HAL_TIM_IC_Start(&htim2, TIM_CHANNEL_2); //indirect channel
+#endif
+#ifdef __USE_TIM3__
+	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); //main channel
+	HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_2); //indirect channel
+#endif
+#ifdef __USE_TIM15__
+	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1); //main channel
+	HAL_TIM_IC_Start(&htim15, TIM_CHANNEL_2); //indirect channel
+#endif
+}
+
 void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 {
+	HAL_GPIO_TogglePin(GPIOB, LED03_Pin);
 #ifdef __USE_TIM1__
 	if(htim->Instance == TIM1) {
 		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
@@ -31,6 +52,7 @@ void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 #endif
 #ifdef __USE_TIM2__
 	if(htim->Instance == TIM2) {
+		HAL_GPIO_TogglePin(GPIOB, LED01_Pin);
 		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
 			SensorHubPWM.Interval2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 			SensorHubPWM.DutyCycle2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
@@ -42,6 +64,7 @@ void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 #endif
 #ifdef __USE_TIM3__
 	if(htim->Instance == TIM3) {
+		HAL_GPIO_TogglePin(GPIOB, LED02_Pin);
 		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
 			SensorHubPWM.Interval3 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
 			SensorHubPWM.DutyCycle3 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);

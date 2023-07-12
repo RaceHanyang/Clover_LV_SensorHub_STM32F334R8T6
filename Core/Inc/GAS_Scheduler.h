@@ -13,12 +13,15 @@
 
 #include "stm32f3xx_hal.h"
 #include "GAS_BuildConfig.h"
+#include "GAS.h"
 
 typedef struct{
 	volatile uint8_t flag_1ms;
 	volatile uint8_t flag_10ms;
 	volatile uint8_t flag_100ms;
 	volatile uint8_t flag_1000ms;
+
+	bool flag_initialized;
 }Scheduler_task;
 
 extern Scheduler_task gTask;
