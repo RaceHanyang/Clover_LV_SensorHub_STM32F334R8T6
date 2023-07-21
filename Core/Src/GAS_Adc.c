@@ -1,8 +1,10 @@
 /*
  * GAS_Adc.c
  *
- *  Created on: Mar 04, 2023
- *      Author: InitusNovus
+ *  Created on: Jul 21, 2023
+ *  Author: Terry
+ *  yoonsb@hanyang.ac.kr
+ *
  */
 
 
@@ -29,7 +31,7 @@ void GAS_Adc_init(void)
 
 		adc1->hadc = &hadc1;
 
-		adc1->dataLength = ((adc1->hadc->Instance->SQR1)>>20U)+1;
+		adc1->dataLength = ((adc1->hadc->Instance->SQR1)>>20U);
 		adc1->data = (uint32_t*)malloc(adc1->dataLength*sizeof(uint32_t));
 
 		GAS_Adc_startAdc(adc1);
@@ -40,7 +42,7 @@ void GAS_Adc_init(void)
 
 		adc2->hadc = &hadc2;
 
-		adc2->dataLength = ((adc2->hadc->Instance->SQR1)>>20U)+1;
+		adc2->dataLength = ((adc2->hadc->Instance->SQR1)>>20U);
 		adc2->data = (uint32_t*)malloc(adc2->dataLength*sizeof(uint32_t));
 
 		GAS_Adc_startAdc(adc2);

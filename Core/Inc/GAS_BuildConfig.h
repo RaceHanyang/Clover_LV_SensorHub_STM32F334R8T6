@@ -11,16 +11,16 @@
 #define INC_GAS_BUILDCONFIG_H_
 
 #define __USE_ADC1__
-//#define __USE_ADC2__
+#define __USE_ADC2__
 
 /*
  * Select Timer Peripheral employed to receive PWM input.
  * Default: Use TIM2 and TIM3
  * */
 //#define __USE_TIM1__
-#define __USE_TIM2__
+//#define __USE_TIM2__
 #define __USE_TIM3__
-//#define __USE_TIM15__
+#define __USE_TIM15__
 
 /*
  * Select the install position to get different binary for each side.
