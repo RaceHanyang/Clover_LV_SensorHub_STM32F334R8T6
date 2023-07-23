@@ -5,11 +5,18 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/GAS.c \
+../Core/Src/GAS_Adc.c \
+../Core/Src/GAS_Can.c \
+../Core/Src/GAS_Pwm.c \
+../Core/Src/GAS_Scheduler.c \
+../Core/Src/GAS_Vadc.c \
 ../Core/Src/adc.c \
 ../Core/Src/can.c \
 ../Core/Src/dma.c \
 ../Core/Src/gpio.c \
 ../Core/Src/i2c.c \
+../Core/Src/iwdg.c \
 ../Core/Src/main.c \
 ../Core/Src/stm32f3xx_hal_msp.c \
 ../Core/Src/stm32f3xx_it.c \
@@ -20,11 +27,18 @@ C_SRCS += \
 ../Core/Src/usart.c 
 
 OBJS += \
+./Core/Src/GAS.o \
+./Core/Src/GAS_Adc.o \
+./Core/Src/GAS_Can.o \
+./Core/Src/GAS_Pwm.o \
+./Core/Src/GAS_Scheduler.o \
+./Core/Src/GAS_Vadc.o \
 ./Core/Src/adc.o \
 ./Core/Src/can.o \
 ./Core/Src/dma.o \
 ./Core/Src/gpio.o \
 ./Core/Src/i2c.o \
+./Core/Src/iwdg.o \
 ./Core/Src/main.o \
 ./Core/Src/stm32f3xx_hal_msp.o \
 ./Core/Src/stm32f3xx_it.o \
@@ -35,11 +49,18 @@ OBJS += \
 ./Core/Src/usart.o 
 
 C_DEPS += \
+./Core/Src/GAS.d \
+./Core/Src/GAS_Adc.d \
+./Core/Src/GAS_Can.d \
+./Core/Src/GAS_Pwm.d \
+./Core/Src/GAS_Scheduler.d \
+./Core/Src/GAS_Vadc.d \
 ./Core/Src/adc.d \
 ./Core/Src/can.d \
 ./Core/Src/dma.d \
 ./Core/Src/gpio.d \
 ./Core/Src/i2c.d \
+./Core/Src/iwdg.d \
 ./Core/Src/main.d \
 ./Core/Src/stm32f3xx_hal_msp.d \
 ./Core/Src/stm32f3xx_it.d \
@@ -57,7 +78,7 @@ Core/Src/%.o Core/Src/%.su: ../Core/Src/%.c Core/Src/subdir.mk
 clean: clean-Core-2f-Src
 
 clean-Core-2f-Src:
-	-$(RM) ./Core/Src/adc.d ./Core/Src/adc.o ./Core/Src/adc.su ./Core/Src/can.d ./Core/Src/can.o ./Core/Src/can.su ./Core/Src/dma.d ./Core/Src/dma.o ./Core/Src/dma.su ./Core/Src/gpio.d ./Core/Src/gpio.o ./Core/Src/gpio.su ./Core/Src/i2c.d ./Core/Src/i2c.o ./Core/Src/i2c.su ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32f3xx_hal_msp.d ./Core/Src/stm32f3xx_hal_msp.o ./Core/Src/stm32f3xx_hal_msp.su ./Core/Src/stm32f3xx_it.d ./Core/Src/stm32f3xx_it.o ./Core/Src/stm32f3xx_it.su ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f3xx.d ./Core/Src/system_stm32f3xx.o ./Core/Src/system_stm32f3xx.su ./Core/Src/tim.d ./Core/Src/tim.o ./Core/Src/tim.su ./Core/Src/usart.d ./Core/Src/usart.o ./Core/Src/usart.su
+	-$(RM) ./Core/Src/GAS.d ./Core/Src/GAS.o ./Core/Src/GAS.su ./Core/Src/GAS_Adc.d ./Core/Src/GAS_Adc.o ./Core/Src/GAS_Adc.su ./Core/Src/GAS_Can.d ./Core/Src/GAS_Can.o ./Core/Src/GAS_Can.su ./Core/Src/GAS_Pwm.d ./Core/Src/GAS_Pwm.o ./Core/Src/GAS_Pwm.su ./Core/Src/GAS_Scheduler.d ./Core/Src/GAS_Scheduler.o ./Core/Src/GAS_Scheduler.su ./Core/Src/GAS_Vadc.d ./Core/Src/GAS_Vadc.o ./Core/Src/GAS_Vadc.su ./Core/Src/adc.d ./Core/Src/adc.o ./Core/Src/adc.su ./Core/Src/can.d ./Core/Src/can.o ./Core/Src/can.su ./Core/Src/dma.d ./Core/Src/dma.o ./Core/Src/dma.su ./Core/Src/gpio.d ./Core/Src/gpio.o ./Core/Src/gpio.su ./Core/Src/i2c.d ./Core/Src/i2c.o ./Core/Src/i2c.su ./Core/Src/iwdg.d ./Core/Src/iwdg.o ./Core/Src/iwdg.su ./Core/Src/main.d ./Core/Src/main.o ./Core/Src/main.su ./Core/Src/stm32f3xx_hal_msp.d ./Core/Src/stm32f3xx_hal_msp.o ./Core/Src/stm32f3xx_hal_msp.su ./Core/Src/stm32f3xx_it.d ./Core/Src/stm32f3xx_it.o ./Core/Src/stm32f3xx_it.su ./Core/Src/syscalls.d ./Core/Src/syscalls.o ./Core/Src/syscalls.su ./Core/Src/sysmem.d ./Core/Src/sysmem.o ./Core/Src/sysmem.su ./Core/Src/system_stm32f3xx.d ./Core/Src/system_stm32f3xx.o ./Core/Src/system_stm32f3xx.su ./Core/Src/tim.d ./Core/Src/tim.o ./Core/Src/tim.su ./Core/Src/usart.d ./Core/Src/usart.o ./Core/Src/usart.su
 
 .PHONY: clean-Core-2f-Src
 
