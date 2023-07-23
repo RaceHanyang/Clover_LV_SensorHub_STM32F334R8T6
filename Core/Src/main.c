@@ -61,7 +61,9 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
+	GAS_Pwm_InterruptServiceRoutine(htim);
+}
 /* USER CODE END 0 */
 
 /**

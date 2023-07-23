@@ -36,6 +36,18 @@ void GAS_Pwm_init()
 #endif
 }
 
+/*
+ * Note: July 23rd 2023
+ * Writer: Terry
+ *
+ * Quite a strange situation here, it seems like the weak function definition in stm32f3xx_hal_tim.c is not overriden with this function.
+ * I tried changing the name of this function by adding the _USER prefix and making the HAL_TIM_IRQHandler() call the new function but then it gave me an undeclared name error.
+ * My theory is that source files in Drivers directory do not link to functions declared/defined in this file.
+ * I overrided the callback in main.c and made that callback to trigger the actual service routine.
+ * Further investigation shall be executed.
+ * */
+
+/*
 void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 {
 	HAL_GPIO_TogglePin(GPIOB, LED03_Pin);
@@ -72,6 +84,7 @@ void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 				SensorHubPWM.DutyRatio3 = ((double)SensorHubPWM.DutyCycle3) /SensorHubPWM.Interval3;
 			}
 		}
+		HAL_GPIO_TogglePin(LED00_GPIO_Port, LED00_Pin);
 	}
 #endif
 #ifdef __USE_TIM15__
@@ -83,6 +96,60 @@ void HAL_TIM_IC_Capture_Callback(TIM_HandleTypeDef *htim)
 				SensorHubPWM.DutyRatio15 = ((double)SensorHubPWM.DutyCycle15) /SensorHubPWM.Interval15;
 			}
 		}
+		HAL_GPIO_TogglePin(LED01_GPIO_Port, LED02_Pin);
+	}
+#endif
+}
+*/
+
+void GAS_Pwm_InterruptServiceRoutine(TIM_HandleTypeDef *htim)
+{
+#ifdef __USE_TIM1__
+	if(htim->Instance == TIM1) {
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+			SensorHubPWM.Interval1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			SensorHubPWM.DutyCycle1 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+			if(SensorHubPWM.Interval1 > 0) {
+				SensorHubPWM.DutyRatio1 = ((double)SensorHubPWM.DutyCycle1) /SensorHubPWM.Interval1;
+			}
+		}
+	}
+#endif
+#ifdef __USE_TIM2__
+	if(htim->Instance == TIM2) {
+		HAL_GPIO_TogglePin(GPIOB, LED01_Pin);
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+			SensorHubPWM.Interval2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			SensorHubPWM.DutyCycle2 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+			if(SensorHubPWM.Interval2 > 0) {
+				SensorHubPWM.DutyRatio2 = ((double)SensorHubPWM.DutyCycle2) /SensorHubPWM.Interval2;
+			}
+		}
+	}
+#endif
+#ifdef __USE_TIM3__
+	if(htim->Instance == TIM3) {
+		//HAL_GPIO_TogglePin(GPIOB, LED02_Pin);
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+			SensorHubPWM.Interval3 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			SensorHubPWM.DutyCycle3 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+			if(SensorHubPWM.Interval3 > 0) {
+				SensorHubPWM.DutyRatio3 = ((double)SensorHubPWM.DutyCycle3) /SensorHubPWM.Interval3;
+			}
+			HAL_GPIO_TogglePin(LED00_GPIO_Port, LED00_Pin);
+		}
+	}
+#endif
+#ifdef __USE_TIM15__
+	if(htim->Instance == TIM15) {
+		if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) {
+			SensorHubPWM.Interval15 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1);
+			SensorHubPWM.DutyCycle15 = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2);
+			if(SensorHubPWM.Interval15 > 0) {
+				SensorHubPWM.DutyRatio15 = ((double)SensorHubPWM.DutyCycle15) /SensorHubPWM.Interval15;
+			}
+		}
+		HAL_GPIO_TogglePin(LED01_GPIO_Port, LED01_Pin);
 	}
 #endif
 }
@@ -150,4 +217,11 @@ uint16_t TickToRPM_TIM3(uint16_t Interval)
 {
 	return (2.5/(((double)Interval * (htim3.Init.Prescaler+1))/PCLK1TIM()));
 }
+
+#ifdef __USE_TIM15__
+uint16_t TickToRPM_TIM15(uint16_t Interval)
+{
+	return (2.5/(((double)Interval * (htim15.Init.Prescaler+1))/PCLK2TIM()));
+}
+#endif
 #endif

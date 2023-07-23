@@ -12,6 +12,7 @@
 #define INC_GAS_PWM_H_
 
 #include "stm32f3xx_hal.h"
+#include "stm32f3xx_hal_tim.h"
 #include "GAS_BuildConfig.h"
 
 
@@ -61,5 +62,7 @@ extern uint16_t TickToRPM_TIM3(uint16_t);
 #endif
 
 #ifdef __USE_TIM15__
+extern uint16_t TickToRPM_TIM15(uint16_t);
 #endif
+
 #endif /* INC_GAS_PWM_H_ */

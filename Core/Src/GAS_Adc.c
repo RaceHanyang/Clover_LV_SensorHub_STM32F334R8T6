@@ -46,7 +46,7 @@ void GAS_Adc_init(void)
 		adc2->data = (uint32_t*)malloc(adc2->dataLength*sizeof(uint32_t));
 
 		GAS_Adc_startAdc(adc2);
-#endif;
+#endif
 }
 
 
