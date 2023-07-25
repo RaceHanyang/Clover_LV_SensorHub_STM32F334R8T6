@@ -29,10 +29,14 @@ void GAS_Pwm_init()
 #ifdef __USE_TIM3__
 	HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); //main channel
 	HAL_TIM_IC_Start(&htim3, TIM_CHANNEL_2); //indirect channel
+
+	//HAL_TIM_Base_Start_IT(&htim3) ;
 #endif
 #ifdef __USE_TIM15__
 	HAL_TIM_IC_Start_IT(&htim15, TIM_CHANNEL_1); //main channel
 	HAL_TIM_IC_Start(&htim15, TIM_CHANNEL_2); //indirect channel
+
+	//HAL_TIM_Base_Start_IT(&htim15) ;
 #endif
 }
 
@@ -136,6 +140,7 @@ void GAS_Pwm_InterruptServiceRoutine(TIM_HandleTypeDef *htim)
 			if(SensorHubPWM.Interval3 > 0) {
 				SensorHubPWM.DutyRatio3 = ((double)SensorHubPWM.DutyCycle3) /SensorHubPWM.Interval3;
 			}
+			SensorHubPWM.updated3 = 1;
 			HAL_GPIO_TogglePin(LED00_GPIO_Port, LED00_Pin);
 		}
 	}
@@ -148,11 +153,96 @@ void GAS_Pwm_InterruptServiceRoutine(TIM_HandleTypeDef *htim)
 			if(SensorHubPWM.Interval15 > 0) {
 				SensorHubPWM.DutyRatio15 = ((double)SensorHubPWM.DutyCycle15) /SensorHubPWM.Interval15;
 			}
+			SensorHubPWM.updated15 = 1;
 		}
 		HAL_GPIO_TogglePin(LED01_GPIO_Port, LED01_Pin);
 	}
 #endif
 }
+
+void GAS_Pwm_run_100ms() {
+#ifdef __USE_TIM1__
+	if(!SensorHubPWM.updated1) {
+		SensorHubPWM.Interval1 = 0;
+		SensorHubPWM.DutyCycle1 = 0;
+		SensorHubPWM.DutyRatio1 = (double)0.0;
+	}
+	SensorHubPWM.updated1 = 0;
+#endif
+#ifdef __USE_TIM2__
+	if(!SensorHubPWM.updated2) {
+		SensorHubPWM.Interval2 = 0;
+		SensorHubPWM.DutyCycle2 = 0;
+		SensorHubPWM.DutyRatio2 = (double)0.0;
+	}
+	SensorHubPWM.updated2 = 0;
+#endif
+#ifdef __USE_TIM3__
+	if(!SensorHubPWM.updated3) {
+		SensorHubPWM.Interval3 = 0;
+		SensorHubPWM.DutyCycle3 = 0;
+		SensorHubPWM.DutyRatio3 = (double)0.0;
+	}
+	SensorHubPWM.updated3 = 0;
+#endif
+#ifdef __USE_TIM15__
+	if(!SensorHubPWM.updated15) {
+		SensorHubPWM.Interval15 = 0;
+		SensorHubPWM.DutyCycle15 = 0;
+		SensorHubPWM.DutyRatio15 = (double)0.0;
+	}
+	SensorHubPWM.updated15 = 0;
+#endif
+}
+
+/*
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	GAS_Pwm_counterOverFlowServiceRoutine(htim);
+}*/
+
+/*
+ * When a following sensor teeth is not detected with in a timer update event,
+ * it is because the wheel is stopped, given an ideal condition.
+ *
+ * (Counter_Reload_Value)/((Clock)/(Prescaler)) = Event Periodity.
+ *
+ * TIM3: 72Mhz Clock, Prescaler (72-1), Counter Reload Value 65535
+ * 65.535ms & 15 degress/teeth => this routine is invoked if wss < 38RPM.
+ * TIM15: 72Mhz Clock, Prescaler (72-1), Counter Reload Value 65535
+ * 65.535ms & 15 degress/teeth => this routine is invoked if wss < 38RPM.
+ */
+/*
+void GAS_Pwm_counterOverFlowServiceRoutine(TIM_HandleTypeDef *htim) {
+#ifdef __USE_TIM1__
+	if(htim->Instance == TIM1) {
+		SensorHubPWM.Interval1 = 0;
+		SensorHubPWM.DutyCycle1 = 0;
+		SensorHubPWM.DutyRatio1 = (double)0.0;
+	}
+#endif
+#ifdef __USE_TIM2__
+	if(htim->Instance == TIM2) {
+		SensorHubPWM.Interval2 = 0;
+		SensorHubPWM.DutyCycle2 = 0;
+		SensorHubPWM.DutyRatio2 = (double)0.0;
+	}
+#endif
+#ifdef __USE_TIM3__
+	if(htim->Instance == TIM3) {
+		SensorHubPWM.Interval3 = 0;
+		SensorHubPWM.DutyCycle3 = 0;
+		SensorHubPWM.DutyRatio3 = (double)0.0;
+	}
+#endif
+#ifdef __USE_TIM15__
+	if(htim->Instance == TIM15) {
+		SensorHubPWM.Interval15 = 0;
+		SensorHubPWM.DutyCycle15 = 0;
+		SensorHubPWM.DutyRatio15 = (double)0.0;
+	}
+#endif
+}
+*/
 
 /*
  * Quite a surprise, stock HAL does not provide a function to look up the clock frequency for timer peripherals.
@@ -215,13 +305,13 @@ uint16_t TickToRPM_TIM2(uint32_t Interval)
  * */
 uint16_t TickToRPM_TIM3(uint16_t Interval)
 {
-	return (2.5/(((double)Interval * (htim3.Init.Prescaler+1))/PCLK1TIM()));
+	return Interval?(2.5/(((double)Interval * (htim3.Init.Prescaler+1))/PCLK1TIM())):0;
 }
 
 #ifdef __USE_TIM15__
 uint16_t TickToRPM_TIM15(uint16_t Interval)
 {
-	return (2.5/(((double)Interval * (htim15.Init.Prescaler+1))/PCLK2TIM()));
+	return Interval?(2.5/(((double)Interval * (htim15.Init.Prescaler+1))/PCLK2TIM())):0;
 }
 #endif
 #endif

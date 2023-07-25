@@ -58,7 +58,7 @@ void GAS_Scheduler_taskCounter_100ms(void)
 	// HAL_GPIO_WritePin(GPIOB, LED03_Pin|LED02_Pin|LED01_Pin|LED00_Pin, GPIO_PIN_RESET);
 	//HAL_GPIO_TogglePin(GPIOB, LED00_Pin/*|LED02_Pin|LED01_Pin|LED00_Pin*/);
 	HAL_GPIO_TogglePin(GPIOC, LED10_Pin);
-
+	GAS_Pwm_run_100ms();
 	//LED03이 Reset LED
 }
 

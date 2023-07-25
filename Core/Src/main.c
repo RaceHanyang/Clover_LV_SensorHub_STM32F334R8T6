@@ -50,7 +50,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-int a;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,6 +63,8 @@ void SystemClock_Config(void);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim) {
 	GAS_Pwm_InterruptServiceRoutine(htim);
 }
+
+
 /* USER CODE END 0 */
 
 /**
@@ -107,7 +108,6 @@ int main(void)
   MX_USART3_UART_Init();
   MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
-  a = 1;
   GAS_Scheduler_init();
   /* USER CODE END 2 */
 
